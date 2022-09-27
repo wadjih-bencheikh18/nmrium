@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 import NmriumPage from '../NmriumPage';
 
-test('should load and migrate .nmrium data from version 0 to version 1', async ({
+test('should load and migrate .nmrium data from version 0', async ({
   page,
 }) => {
   const nmrium = await NmriumPage.create(page);
@@ -13,6 +13,23 @@ test('should load and migrate .nmrium data from version 0 to version 1', async (
   // If the file was loaded successfully, there should be a 1H,1H tab.
   await expect(
     nmrium.page.locator('_react=InternalTab[tabid = "1H,1H"]'),
+  ).toBeVisible();
+});
+test('should load and migrate .nmrium data from version 1', async ({
+  page,
+}) => {
+  const nmrium = await NmriumPage.create(page);
+  await nmrium.page.setInputFiles(
+    '_react=DropZone >> input[type=file]',
+    'test-e2e/data/1h-version-1.nmrium',
+  );
+  // If the file was loaded successfully, there should be a 1H,1H and 1H tabs.
+  await expect(
+    nmrium.page.locator('_react=InternalTab[tabid = "1H,1H"]'),
+  ).toBeVisible();
+
+  await expect(
+    nmrium.page.locator('_react=InternalTab[tabid = "1H"]'),
   ).toBeVisible();
 });
 
@@ -81,7 +98,7 @@ test('should load multiple files', async ({ page }) => {
     nmrium.page.locator('_react=InternalTab[tabid = "1H,1H"]'),
   ).toBeVisible();
 });
-test.only('should load file using drag and drop .nmrium', async ({ page }) => {
+test('should load file using drag and drop .nmrium', async ({ page }) => {
   const nmrium = await NmriumPage.create(page);
   await nmrium.dropFile('1h-version-1-datasource.nmrium');
   // If the file was loaded successfully, there should be a 1H,1H tab.
